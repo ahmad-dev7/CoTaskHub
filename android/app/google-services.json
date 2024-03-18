@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "995545944430",
+    "project_id": "cotaskhub",
+    "storage_bucket": "cotaskhub.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:995545944430:android:1f9853926282be166c717f",
+        "android_client_info": {
+          "package_name": "com.example.co_task_hub"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbQ2x_FrkLwW3lGKt9XLV4gYXZkZNKvww"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
