@@ -20,3 +20,16 @@ class KHorizontalSpace extends StatelessWidget {
     return SizedBox(width: width ?? 10);
   }
 }
+
+class KHorizontalPadding extends StatelessWidget {
+  final Widget child;
+  const KHorizontalPadding({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: child,
+    );
+  }
+}

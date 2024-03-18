@@ -1,8 +1,14 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+late Box dataBox;
 
 class MyController extends GetxController {
-  GetStorage box = GetStorage();
-  var userName = ''.obs;
-  var userEMail = ''.obs;
+  var themeData = ThemeData(
+    scaffoldBackgroundColor: const Color(0xFF435862),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Color(0xFF89AFC2),
+    ),
+  ).obs;
 }

@@ -1,7 +1,6 @@
 import 'package:co_task_hub/constants/k_my_text.dart';
 import 'package:co_task_hub/controller/get_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,7 +10,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final MyController _myController = Get.put(MyController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: SingleChildScrollView(
         child: Column(
           children: [
-            KMyText('Welcome to Home ${_myController.userName}'),
+            KMyText('Welcome to Home ${dataBox.get('name')}'),
           ],
         ),
       )),

@@ -18,7 +18,7 @@ class KMyText extends StatelessWidget {
     return Text(
       text,
       style: TextStyle(
-        color: color ?? Colors.black,
+        color: color ?? Colors.white,
         fontSize: size,
         fontWeight: weight,
       ),

@@ -11,9 +11,10 @@ class KCustomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialButton(
       onPressed: onTap,
-      height: 30,
-      minWidth: double.maxFinite,
+      height: 50,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       color: color ?? const Color(0xFF55ABD0),
+      minWidth: double.maxFinite,
       child: child,
     );
   }

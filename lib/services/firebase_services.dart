@@ -1,10 +1,9 @@
 import 'package:co_task_hub/controller/get_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:get/get.dart';
 
 class FirebaseServices {
-  final MyController _myCtrl = Get.put(MyController());
   FirebaseAuth auth = FirebaseAuth.instance;
+
   // Signup (Create User) with email & password
   Future<bool> createUser(
       {required String email,
@@ -16,14 +15,13 @@ class FirebaseServices {
     );
     if (userCredential.user != null) {
       userCredential.user?.updateDisplayName(name).then((_) {
-        _myCtrl.userName.value = name;
-        _myCtrl.userEMail.value = email;
-        _myCtrl.box.write('email', email);
-        _myCtrl.box.write('name', name);
+        dataBox.put('email', email);
+        dataBox.put('name', name);
       });
-    } else {}
-
-    return userCredential.user != null ? true : false;
+      return true;
+    } else {
+      return false;
+    }
   }
 
   // Login (Fetch user's email & password)
@@ -34,9 +32,8 @@ class FirebaseServices {
       password: password,
     );
     if (userCredential.user != null) {
-      _myCtrl.userEMail.value = userCredential.user!.email!;
-      _myCtrl.userName.value = userCredential.user!.displayName!;
-      _myCtrl.box.write('name', userCredential.user?.displayName);
+      dataBox.put('name', userCredential.user!.displayName!);
+      dataBox.put('email', email);
     }
 
     return userCredential.user != null ? true : false;
