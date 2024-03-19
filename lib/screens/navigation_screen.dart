@@ -1,11 +1,12 @@
-import 'package:co_task_hub/constants/k_nav_item.dart';
+import 'package:co_task_hub/constants/k_bottom_bar_items.dart';
+import 'package:co_task_hub/constants/k_my_text.dart';
+import 'package:co_task_hub/controller/get_controller.dart';
 import 'package:co_task_hub/screens/chat_screen.dart';
 import 'package:co_task_hub/screens/files_screen.dart';
 import 'package:co_task_hub/screens/home_screen.dart';
 import 'package:co_task_hub/screens/track_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:circular_bottom_navigation/circular_bottom_navigation.dart';
-import 'package:circular_bottom_navigation/tab_item.dart';
+import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 class NavigationScreen extends StatefulWidget {
   const NavigationScreen({super.key});
@@ -15,17 +16,27 @@ class NavigationScreen extends StatefulWidget {
 }
 
 class _NavigationScreenState extends State<NavigationScreen> {
-  List<TabItem> tabItems = List.of([
-    kGetTabItem(Icons.home, 'Home'),
-    kGetTabItem(Icons.chat, 'Chat'),
-    kGetTabItem(Icons.file_copy_sharp, 'Files'),
-    kGetTabItem(Icons.manage_history, 'History'),
-  ]);
-  List<IconData> icons = [
-    Icons.home,
-    Icons.chat,
-    Icons.folder,
-    Icons.manage_history,
+  List<SalomonBottomBarItem> items = [
+    kGetBottomBarItems(
+      icon: Icons.home_outlined,
+      text: 'Home',
+      activeIcon: Icons.home_filled,
+    ),
+    kGetBottomBarItems(
+      icon: Icons.chat_outlined,
+      text: 'Chat',
+      activeIcon: Icons.chat,
+    ),
+    kGetBottomBarItems(
+      icon: Icons.file_copy_outlined,
+      text: 'Document',
+      activeIcon: Icons.file_copy,
+    ),
+    kGetBottomBarItems(
+      icon: Icons.manage_history_outlined,
+      text: 'History',
+      activeIcon: Icons.manage_history,
+    ),
   ];
   List<Widget> screens = [
     const HomeScreen(),
@@ -33,25 +44,20 @@ class _NavigationScreenState extends State<NavigationScreen> {
     const FilesScreen(),
     const TrackProgressScreen(),
   ];
-  final CircularBottomNavigationController navController =
-      CircularBottomNavigationController(0);
+  int currentIndex = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const ListTile(),
+        title: ListTile(
+          title: KMyText('Hello, ${dataBox.get('name')}'),
+        ),
       ),
-      body: screens[navController.value!],
-      bottomNavigationBar: CircularBottomNavigation(
-        tabItems,
-        iconsSize: 30,
-        circleSize: 50,
-        circleStrokeWidth: 1,
-        normalIconColor: Colors.white70,
-        barBackgroundColor: const Color(0xFF5191B6),
-        controller: navController,
-        allowSelectedIconCallback: true,
-        selectedCallback: (i) => setState(() => navController.value = i),
+      body: screens[currentIndex],
+      bottomNavigationBar: SalomonBottomBar(
+        items: items,
+        currentIndex: currentIndex,
+        onTap: (index) => setState(() => currentIndex = index),
       ),
     );
   }

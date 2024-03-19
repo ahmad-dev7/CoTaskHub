@@ -5,12 +5,14 @@ class KMyText extends StatelessWidget {
   final Color? color;
   final double? size;
   final FontWeight? weight;
+  final TextDecoration? decoration;
   const KMyText(
     this.text, {
     super.key,
     this.color,
     this.size,
     this.weight,
+    this.decoration,
   });
 
   @override
@@ -18,7 +20,8 @@ class KMyText extends StatelessWidget {
     return Text(
       text,
       style: TextStyle(
-        color: color ?? Colors.white,
+        decoration: decoration ?? TextDecoration.none,
+        color: color ?? Colors.black,
         fontSize: size,
         fontWeight: weight,
       ),

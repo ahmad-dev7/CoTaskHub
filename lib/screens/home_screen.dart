@@ -1,5 +1,5 @@
-import 'package:co_task_hub/constants/k_my_text.dart';
-import 'package:co_task_hub/controller/get_controller.dart';
+import 'package:co_task_hub/components/welcome_intro.dart';
+import 'package:co_task_hub/constants/k_custom_space.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -12,15 +12,14 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
+    return const Scaffold(
+      body: KHorizontalPadding(
+        child: Center(
           child: SingleChildScrollView(
-        child: Column(
-          children: [
-            KMyText('Welcome to Home ${dataBox.get('name')}'),
-          ],
+            child: WelcomeIntro(),
+          ),
         ),
-      )),
+      ),
     );
   }
 }

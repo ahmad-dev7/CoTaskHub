@@ -1,3 +1,4 @@
+import 'package:co_task_hub/constants/k_colors.dart';
 import 'package:co_task_hub/constants/k_custom_button.dart';
 import 'package:co_task_hub/constants/k_custom_space.dart';
 import 'package:co_task_hub/constants/k_my_text.dart';
@@ -19,46 +20,84 @@ class SignupScreen extends StatelessWidget {
     onSignup() {
       FirebaseServices()
           .createUser(
-            email: emailController.text,
-            password: passwordController.text,
-            name: nameController.text,
-          )
+        email: emailController.text.trim(),
+        password: passwordController.text,
+        name: nameController.text,
+      )
           .then(
-            (value) => Get.to(() => const NavigationScreen()),
+        (value) {
+          Get.snackbar(
+            "Success",
+            "Account created!",
+            duration: const Duration(milliseconds: 1300),
+            backgroundColor: Colors.greenAccent,
           );
+          Future.delayed(const Duration(milliseconds: 1600)).then(
+            (value) => Get.offAll(
+              () => const NavigationScreen(),
+            ),
+          );
+        },
+      );
     }
 
     return Scaffold(
       body: KHorizontalPadding(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            KTextField(
-              controller: nameController,
-              hintText: 'Enter your name',
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center, // Center vertically
+              children: [
+                const KMyText('Signup', size: 25),
+                const KVerticalSpace(),
+                KTextField(
+                  controller: nameController,
+                  hintText: 'Enter your name',
+                  iconData: Icons.person,
+                  keyboardType: TextInputType.name,
+                  textCapitalization: TextCapitalization.words,
+                ),
+                const KVerticalSpace(),
+                KTextField(
+                  controller: emailController,
+                  hintText: 'Enter your email',
+                  iconData: Icons.email,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                const KVerticalSpace(),
+                KTextField(
+                  controller: passwordController,
+                  hintText: 'Enter your password',
+                  isPasswordField: true,
+                  iconData: Icons.lock,
+                  keyboardType: TextInputType.visiblePassword,
+                ),
+                const KVerticalSpace(height: 50),
+                KCustomButton(
+                  onTap: onSignup,
+                  child: const KMyText('Signup', color: Colors.white),
+                ),
+                const KVerticalSpace(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const KMyText(
+                      'Don\'t have an account?',
+                      color: Colors.grey,
+                    ),
+                    TextButton(
+                      onPressed: () => Get.to(() => const LoginScreen()),
+                      child: const KMyText(
+                        'Login',
+                        color: accentColor,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            const KVerticalSpace(),
-            KTextField(
-              controller: emailController,
-              hintText: 'Enter your email',
-            ),
-            const KVerticalSpace(),
-            KTextField(
-              controller: passwordController,
-              hintText: 'Enter your password',
-              isPasswordField: true,
-            ),
-            const KVerticalSpace(height: 30),
-            KCustomButton(
-              onTap: onSignup,
-              child: const KMyText('Signup'),
-            ),
-            const KVerticalSpace(),
-            TextButton(
-                onPressed: () => Get.to(() => const LoginScreen()),
-                child: const KMyText('Login', color: Colors.blue))
-          ],
+          ),
         ),
       ),
     );

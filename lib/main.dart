@@ -1,3 +1,4 @@
+import 'package:co_task_hub/constants/k_colors.dart';
 import 'package:co_task_hub/controller/get_controller.dart';
 import 'package:co_task_hub/firebase_options.dart';
 import 'package:co_task_hub/screens/login_screen.dart';
@@ -20,10 +21,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    MyController myCtrl = Get.put(MyController());
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: myCtrl.themeData.value,
+      theme: kThemeData,
       home: dataBox.isNotEmpty ? const NavigationScreen() : const LoginScreen(),
     );
   }

@@ -47,6 +47,9 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   circular_bottom_navigation: ^2.4.0
+  font_awesome_flutter: ^10.7.0
+  timeline_tile: ^2.0.0
+  salomon_bottom_bar: ^3.3.2
 
 dev_dependencies:
   flutter_test:

@@ -1,3 +1,5 @@
+import 'package:co_task_hub/constants/k_colors.dart';
+import 'package:co_task_hub/constants/k_values.dart';
 import 'package:flutter/material.dart';
 
 class KCustomButton extends StatelessWidget {
@@ -12,8 +14,9 @@ class KCustomButton extends StatelessWidget {
     return MaterialButton(
       onPressed: onTap,
       height: 50,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      color: color ?? const Color(0xFF55ABD0),
+      shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius)),
+      color: color ?? accentColor,
       minWidth: double.maxFinite,
       child: child,
     );
