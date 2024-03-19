@@ -8,7 +8,7 @@ class KTextField extends StatelessWidget {
   final String hintText;
   final IconData? iconData;
   final TextInputType? keyboardType;
-  final TextCapitalization? textCapitalization;
+  final TextCapitalization? capitalization;
   final Color? color;
   final int? maxLines;
 
@@ -19,7 +19,7 @@ class KTextField extends StatelessWidget {
     this.isPasswordField,
     this.iconData,
     this.keyboardType,
-    this.textCapitalization,
+    this.capitalization,
     this.color,
     this.maxLines,
   });
@@ -30,7 +30,7 @@ class KTextField extends StatelessWidget {
       style: const TextStyle(color: Colors.black),
       controller: controller,
       maxLines: maxLines ?? 1,
-      textCapitalization: textCapitalization ?? TextCapitalization.none,
+      textCapitalization: capitalization ?? TextCapitalization.none,
       obscureText: isPasswordField ?? false,
       keyboardType: keyboardType ?? TextInputType.text,
       decoration: InputDecoration(

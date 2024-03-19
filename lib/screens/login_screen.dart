@@ -3,6 +3,8 @@ import 'package:co_task_hub/constants/k_custom_button.dart';
 import 'package:co_task_hub/constants/k_custom_space.dart';
 import 'package:co_task_hub/constants/k_my_text.dart';
 import 'package:co_task_hub/constants/k_textfield.dart';
+import 'package:co_task_hub/controller/get_controller.dart';
+import 'package:co_task_hub/screens/home_screen.dart';
 import 'package:co_task_hub/screens/navigation_screen.dart';
 import 'package:co_task_hub/screens/signup_screen.dart';
 import 'package:co_task_hub/services/firebase_services.dart';
@@ -19,7 +21,7 @@ class LoginScreen extends StatelessWidget {
     onLogin() async {
       debugPrint('executed Login');
       bool isValidUser = await FirebaseServices().loginUser(
-        email: emailController.text.trim(),
+        email: emailController.text.trim().toLowerCase(),
         password: passwordController.text,
       );
       if (isValidUser) {
@@ -31,7 +33,9 @@ class LoginScreen extends StatelessWidget {
         );
         Future.delayed(const Duration(milliseconds: 1600)).then(
           (value) => Get.offAll(
-            () => const NavigationScreen(),
+            () => myController.teamData.value.teamCode != null
+                ? const NavigationScreen()
+                : const HomeScreen(),
           ),
         );
       } else {
@@ -40,56 +44,59 @@ class LoginScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          child: KHorizontalPadding(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const KMyText('Login', size: 25),
-                const KVerticalSpace(),
-                // Email Textfield
-                KTextField(
-                  controller: emailController,
-                  hintText: 'Enter your email',
-                  iconData: Icons.email,
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const KVerticalSpace(),
-                // Password TextField
-                KTextField(
-                  controller: passwordController,
-                  hintText: 'Enter your password',
-                  isPasswordField: true,
-                  iconData: Icons.lock,
-                  keyboardType: TextInputType.visiblePassword,
-                ),
-                const KVerticalSpace(height: 50),
-                // Login button
-                KCustomButton(
-                  onTap: onLogin,
-                  child: const KMyText(
-                    'Login',
-                    color: Colors.white,
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            child: KHorizontalPadding(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const KVerticalSpace(),
+                  const KMyText('Login', size: 25),
+                  const KVerticalSpace(),
+                  // Email Textfield
+                  KTextField(
+                    controller: emailController,
+                    hintText: 'Enter your email',
+                    iconData: Icons.email,
+                    keyboardType: TextInputType.emailAddress,
                   ),
-                ),
-                const KVerticalSpace(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const KMyText('Don\'t have an account?  ',
-                        color: Colors.grey),
-                    TextButton(
-                      onPressed: () => Get.to(() => const SignupScreen()),
-                      child: const KMyText(
-                        'Signup',
-                        color: accentColor,
-                        decoration: TextDecoration.underline,
-                      ),
+                  const KVerticalSpace(),
+                  // Password TextField
+                  KTextField(
+                    controller: passwordController,
+                    hintText: 'Enter your password',
+                    isPasswordField: true,
+                    iconData: Icons.lock,
+                    keyboardType: TextInputType.visiblePassword,
+                  ),
+                  const KVerticalSpace(height: 50),
+                  // Login button
+                  KCustomButton(
+                    onTap: onLogin,
+                    child: const KMyText(
+                      'Login',
+                      color: Colors.white,
                     ),
-                  ],
-                )
-              ],
+                  ),
+                  const KVerticalSpace(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const KMyText('Don\'t have an account?  ',
+                          color: Colors.grey),
+                      TextButton(
+                        onPressed: () => Get.to(() => const SignupScreen()),
+                        child: const KMyText(
+                          'Signup',
+                          color: accentColor,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
           ),
         ),

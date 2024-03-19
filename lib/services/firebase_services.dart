@@ -1,7 +1,10 @@
-import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:co_task_hub/constants/k_generate_code.dart';
 import 'package:co_task_hub/controller/get_controller.dart';
+import 'package:co_task_hub/model/team_data_model.dart';
+import 'package:co_task_hub/screens/navigation_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
 
 class FirebaseServices {
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -39,7 +42,8 @@ class FirebaseServices {
       dataBox.put('name', userCredential.user!.displayName!);
       dataBox.put('email', email);
     }
-
+    myController.teamData.value = await getTeamDetails();
+    await Future.delayed(const Duration(milliseconds: 100));
     return userCredential.user != null ? true : false;
   }
 
@@ -64,13 +68,17 @@ class FirebaseServices {
         }
       ],
     });
+    dataBox.put('teamCode', teamCode);
+    myController.teamData.value = await getTeamDetails();
+    myController.teamData.refresh();
+    print("Created team name ${myController.teamData.value.teamName!}");
     return;
   }
 
-  // Add Team
+  // Join Team
   Future joinTeam({required String teamCode}) async {
-    var name = 'Arvind Sonkar';
-    var email = 'arvind@gmail.com';
+    var name = dataBox.get('name');
+    var email = dataBox.get('email');
     QuerySnapshot querySnapshot = await teamCollection
         .where(Filter('teamCode', isEqualTo: teamCode))
         .get();
@@ -83,28 +91,30 @@ class FirebaseServices {
         'email': email,
       });
       await teamDoc.reference.update({'members': currentMembers});
-      print('Member added successfully');
-    } else {
-      print('error member added failed');
+      dataBox.put('teamCode', teamCode);
+      myController.teamData.value = await getTeamDetails();
+      myController.teamData.refresh();
+      Get.offAll(() => const NavigationScreen());
     }
   }
 
-  String generateTeamCode() {
-    final Random random = Random();
-    String alphabets = 'abcdefghijklmnopqrstuvwxyz';
-    String numbers = '1234567890';
-    String teamCode = '';
-    late String alphabetCode;
-    late String numCode;
-    for (var i = 0; i <= 4; i++) {
-      alphabetCode = String.fromCharCodes(Iterable.generate(
-          4, (_) => alphabets.codeUnitAt(random.nextInt(alphabets.length))));
-    }
-    for (var i = 0; i <= 4; i++) {
-      numCode = String.fromCharCodes(Iterable.generate(
-          4, (_) => numbers.codeUnitAt(random.nextInt(numbers.length))));
-    }
-    teamCode = alphabetCode + numCode;
-    return teamCode;
+  // Fetch Team  Details
+  Future getTeamDetails() async {
+    QuerySnapshot querySnapshot = await teamCollection
+        .where(Filter('members', arrayContains: {
+          'name': dataBox.get('name'),
+          'email': dataBox.get('email')
+        }))
+        .get();
+
+    List<Map<String, dynamic>> teamData = querySnapshot.docs
+        .map((doc) => doc.data() as Map<String, dynamic>)
+        .toList();
+
+    TeamData myTeamData = TeamData.fromJson(teamData[0]);
+
+    return myTeamData;
   }
+
+  Future leaveTeam() async {}
 }

@@ -34,14 +34,14 @@ class CreateTeamDialog extends StatelessWidget {
               controller: teamNameController,
               hintText: 'Enter Team name',
               color: cardColor.withAlpha(255),
-              textCapitalization: TextCapitalization.words,
+              capitalization: TextCapitalization.words,
             ),
             const KVerticalSpace(),
             KTextField(
               controller: projectNameController,
               hintText: 'Enter Project name',
               color: cardColor.withAlpha(255),
-              textCapitalization: TextCapitalization.words,
+              capitalization: TextCapitalization.words,
             ),
             const KVerticalSpace(),
             KTextField(
@@ -50,7 +50,7 @@ class CreateTeamDialog extends StatelessWidget {
               maxLines: 3,
               keyboardType: TextInputType.multiline,
               color: cardColor.withAlpha(255),
-              textCapitalization: TextCapitalization.sentences,
+              capitalization: TextCapitalization.sentences,
             ),
             const KVerticalSpace(),
             KCustomButton(

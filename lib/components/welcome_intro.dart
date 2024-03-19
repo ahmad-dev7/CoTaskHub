@@ -5,6 +5,7 @@ import 'package:co_task_hub/constants/k_custom_space.dart';
 import 'package:co_task_hub/constants/k_my_text.dart';
 import 'package:co_task_hub/constants/k_textfield.dart';
 import 'package:co_task_hub/constants/k_values.dart';
+import 'package:co_task_hub/screens/navigation_screen.dart';
 import 'package:co_task_hub/services/firebase_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -30,8 +31,8 @@ class _WelcomeIntroState extends State<WelcomeIntro> {
       ),
       barrierDismissible: false,
       barrierColor: const Color(0xAF000000),
-    ).then(
-      (value) => Get.snackbar(
+    ).then((value) {
+      Get.snackbar(
         '',
         '',
         isDismissible: true,
@@ -43,8 +44,9 @@ class _WelcomeIntroState extends State<WelcomeIntro> {
             color: Colors.white),
         duration: const Duration(seconds: 15),
         backgroundColor: Colors.green,
-      ),
-    );
+      );
+      Get.offAll(() => const NavigationScreen());
+    });
   }
 
   @override

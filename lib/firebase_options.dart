@@ -52,5 +52,11 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions android = FirebaseOptions();
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyCbQ2x_FrkLwW3lGKt9XLV4gYXZkZNKvww',
+    appId: '1:995545944430:android:1f9853926282be166c717f',
+    messagingSenderId: '995545944430',
+    projectId: 'cotaskhub',
+    storageBucket: 'cotaskhub.appspot.com',
+  );
 }
