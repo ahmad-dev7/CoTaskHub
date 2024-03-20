@@ -1,11 +1,12 @@
 class TeamData {
-  String? adminName;
-  String? teamName;
-  List<Members>? members;
-  String? projectDescription;
-  String? teamCode;
-  String? projectName;
-  String? adminEmail;
+  final String? adminName;
+  final String? teamName;
+  final List<Member>? members;
+  final String? projectDescription;
+  final String? teamCode;
+  final String? projectName;
+  final List<Task>? tasks;
+  final String? adminEmail;
 
   TeamData({
     this.adminName,
@@ -14,38 +15,67 @@ class TeamData {
     this.projectDescription,
     this.teamCode,
     this.projectName,
+    this.tasks,
     this.adminEmail,
   });
 
-  TeamData.fromJson(Map<String, dynamic> json) {
-    adminName = json['adminName'];
-    teamName = json['teamName'];
-    members = <Members>[];
-    json['members'].forEach((member) {
-      members!.add(Members.fromJson(member));
-    });
-    projectDescription = json['projectDescription'];
-    teamCode = json['teamCode'];
-    projectName = json['projectName'];
-    adminEmail = json['adminEmail'];
+  factory TeamData.fromJson(Map<String, dynamic> json) {
+    return TeamData(
+      adminName: json['adminName'],
+      teamName: json['teamName'],
+      members: (json['members'] as List<dynamic>?)
+          ?.map((member) => Member.fromJson(member))
+          .toList(),
+      projectDescription: json['projectDescription'],
+      teamCode: json['teamCode'],
+      projectName: json['projectName'],
+      tasks: (json['tasks'] as List<dynamic>?)
+          ?.map((task) => Task.fromJson(task))
+          .toList(),
+      adminEmail: json['adminEmail'],
+    );
   }
 }
 
-class Members {
-  String? name;
-  String? email;
+class Member {
+  final String? name;
+  final String? email;
 
-  Members({required this.name, required this.email});
+  Member({
+    this.name,
+    this.email,
+  });
 
-  Members.fromJson(Map<String, dynamic> json) {
-    name = json['name']!;
-    email = json['email']!;
+  factory Member.fromJson(Map<String, dynamic> json) {
+    return Member(
+      name: json['name'],
+      email: json['email'],
+    );
   }
+}
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['name'] = name;
-    data['email'] = email;
-    return data;
+class Task {
+  final String? taskDesc;
+  final String? dueDate;
+  final String? taskTitle;
+  final String? assignedTo;
+  final bool? isCompleted;
+
+  Task({
+    this.taskDesc,
+    this.dueDate,
+    this.taskTitle,
+    this.assignedTo,
+    this.isCompleted,
+  });
+
+  factory Task.fromJson(Map<String, dynamic> json) {
+    return Task(
+      taskDesc: json['taskDesc'],
+      dueDate: json['dueDate'],
+      taskTitle: json['taskTitle'],
+      assignedTo: json['assignedTo'],
+      isCompleted: json['isCompleted'],
+    );
   }
 }

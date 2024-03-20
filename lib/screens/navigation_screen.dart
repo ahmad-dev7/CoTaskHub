@@ -64,12 +64,13 @@ class _NavigationScreenState extends State<NavigationScreen> {
         ),
         actions: [
           Visibility(
-            visible: isAdmin,
+            visible:
+                myController.teamData.value.adminEmail == dataBox.get('email'),
             child: Padding(
               padding: const EdgeInsets.only(right: 15),
               child: Chip(
-                backgroundColor: accentColor,
-                label: KMyText(teamData.teamCode!, color: Colors.white),
+                backgroundColor: cardColor,
+                label: KMyText(teamData.teamCode!, color: accentColor),
                 onDeleted: () => Clipboard.setData(
                   ClipboardData(text: teamData.teamCode!),
                 ).then((value) => Toast.show(
@@ -77,7 +78,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
                       duration: Toast.lengthShort,
                       gravity: Toast.center,
                     )),
-                deleteIcon: const Icon(Icons.copy_rounded, color: Colors.white),
+                deleteIcon: const Icon(Icons.copy_rounded, color: accentColor),
               ),
             ),
           )

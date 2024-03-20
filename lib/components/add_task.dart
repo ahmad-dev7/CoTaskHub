@@ -6,7 +6,9 @@ import 'package:co_task_hub/constants/k_format_date.dart';
 import 'package:co_task_hub/constants/k_my_text.dart';
 import 'package:co_task_hub/constants/k_textfield.dart';
 import 'package:co_task_hub/controller/get_controller.dart';
+import 'package:co_task_hub/services/firebase_services.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class CreateTask extends StatefulWidget {
   const CreateTask({super.key});
@@ -105,7 +107,11 @@ class _CreateTaskState extends State<CreateTask> {
                           lastDate: DateTime.now().add(
                             const Duration(days: 31),
                           ),
-                        ).then((value) => setState(() => dueDate = value!));
+                        ).then((value) {
+                          setState(() => dueDate = value!);
+                          Get.snackbar('Success', 'Task Created');
+                          Get.back();
+                        });
                       },
                       child: Container(
                         decoration: BoxDecoration(
@@ -130,12 +136,14 @@ class _CreateTaskState extends State<CreateTask> {
               const KVerticalSpace(),
               KCustomButton(
                 child: const KMyText('Create Task'),
-                onTap: () {
-                  print("create task title: ${titleController.text}");
-                  print(
-                      "create task description:  ${descriptionController.text}");
-                  print("create task assigned to: $assignTo");
-                  print("create task due date: ${kFormatDate(dueDate!)}");
+                onTap: () async {
+                  await FirebaseServices().addTask(
+                    title: titleController.text,
+                    desc: descriptionController.text,
+                    dueDate: dueDate!,
+                    assignedTo: assignTo,
+                  );
+                  Navigator.pop(context);
                 },
               )
             ],

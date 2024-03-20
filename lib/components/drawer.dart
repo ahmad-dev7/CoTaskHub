@@ -19,6 +19,11 @@ class MyDrawer extends StatefulWidget {
 
 class _MyDrawerState extends State<MyDrawer> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
@@ -30,6 +35,7 @@ class _MyDrawerState extends State<MyDrawer> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Hello there
             Padding(
               padding: const EdgeInsets.only(left: 25),
               child: KMyText(
@@ -38,6 +44,7 @@ class _MyDrawerState extends State<MyDrawer> {
                 size: 18,
               ),
             ),
+            // Indicators
             Container(
               width: double.maxFinite,
               margin: const EdgeInsets.all(15),
@@ -89,6 +96,9 @@ class _MyDrawerState extends State<MyDrawer> {
               ),
             ),
             const KVerticalSpace(),
+            // Webview
+
+            // Leave Team & Logout
             Column(
               children: [
                 Padding(

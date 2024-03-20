@@ -19,6 +19,7 @@ class LoginScreen extends StatelessWidget {
     TextEditingController emailController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
     onLogin() async {
+      dataBox.clear();
       debugPrint('executed Login');
       bool isValidUser = await FirebaseServices().loginUser(
         email: emailController.text.trim().toLowerCase(),
