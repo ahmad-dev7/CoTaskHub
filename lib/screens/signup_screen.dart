@@ -9,15 +9,22 @@ import 'package:co_task_hub/services/firebase_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class SignupScreen extends StatelessWidget {
+class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
 
   @override
+  State<SignupScreen> createState() => _SignupScreenState();
+}
+
+class _SignupScreenState extends State<SignupScreen> {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  bool gettingData = false;
+  @override
   Widget build(BuildContext context) {
-    TextEditingController nameController = TextEditingController();
-    TextEditingController emailController = TextEditingController();
-    TextEditingController passwordController = TextEditingController();
     onSignup() {
+      setState(() => gettingData = true);
       FirebaseServices()
           .createUser(
         email: emailController.text.trim().toLowerCase(),
@@ -32,11 +39,12 @@ class SignupScreen extends StatelessWidget {
             duration: const Duration(milliseconds: 1300),
             backgroundColor: Colors.greenAccent,
           );
-          Future.delayed(const Duration(milliseconds: 1600)).then(
-            (value) => Get.offAll(
+          Future.delayed(const Duration(milliseconds: 1600)).then((value) {
+            setState(() => gettingData = false);
+            Get.offAll(
               () => const HomeScreen(),
-            ),
-          );
+            );
+          });
         },
       );
     }
@@ -78,7 +86,11 @@ class SignupScreen extends StatelessWidget {
                   const KVerticalSpace(height: 50),
                   KCustomButton(
                     onTap: onSignup,
-                    child: const KMyText('Signup', color: Colors.white),
+                    child: Visibility(
+                        visible: !gettingData,
+                        replacement: const CircularProgressIndicator(
+                            color: Colors.white),
+                        child: const KMyText('Signup', color: Colors.white)),
                   ),
                   const KVerticalSpace(),
                   Row(

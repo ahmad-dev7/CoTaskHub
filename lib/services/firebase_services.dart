@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:co_task_hub/constants/k_generate_code.dart';
 import 'package:co_task_hub/controller/get_controller.dart';
 import 'package:co_task_hub/model/team_data_model.dart';
-import 'package:co_task_hub/screens/navigation_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
@@ -77,6 +76,7 @@ class FirebaseServices {
       'tasks': [],
     });
     dataBox.put('teamCode', teamCode);
+    Get.back();
     myController.teamData.value = await getTeamDetails();
     myController.teamData.refresh();
     print("Created team name ${myController.teamData.value.teamName!}");
@@ -102,7 +102,7 @@ class FirebaseServices {
       dataBox.put('teamCode', teamCode);
       myController.teamData.value = await getTeamDetails();
       myController.teamData.refresh();
-      Get.offAll(() => const NavigationScreen());
+      return;
     }
   }
 
@@ -202,6 +202,7 @@ class FirebaseServices {
     await files.add({
       'name': fileName,
       'url': fileUrl,
+      'teamCode': myController.teamData.value.teamCode,
     });
 
     return fileUrl;
@@ -209,7 +210,14 @@ class FirebaseServices {
 
   // Get Documents
   Future getDocuments() async {
-    final result = await files.get();
+    final result = await files
+        .where(
+          Filter(
+            'teamCode',
+            isEqualTo: dataBox.get('teamCode'),
+          ),
+        )
+        .get();
 
     var filesData = result.docs.map((e) => e.data()).toList();
     print(filesData[0]);

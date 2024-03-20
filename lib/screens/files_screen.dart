@@ -34,6 +34,7 @@ class _FilesScreenState extends State<FilesScreen> {
           .addDocuments(fileName: fileName, file: file)
           .whenComplete(() => setState(() => uploadingFile = false));
       await FirebaseServices().createMessage(message: fileUrl, isUrl: true);
+      getFiles();
       Get.snackbar('Success', 'Pdf uploaded successfully');
     }
   }

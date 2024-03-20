@@ -6,10 +6,11 @@ import 'package:co_task_hub/constants/k_textfield.dart';
 import 'package:co_task_hub/services/firebase_services.dart';
 import 'package:flutter/material.dart';
 
-class CreateTeamDialog extends StatelessWidget {
+class CreateTeamDialog extends StatefulWidget {
   final TextEditingController teamNameController;
   final TextEditingController projectNameController;
   final TextEditingController projectDescriptionController;
+
   const CreateTeamDialog({
     super.key,
     required this.teamNameController,
@@ -17,6 +18,12 @@ class CreateTeamDialog extends StatelessWidget {
     required this.projectDescriptionController,
   });
 
+  @override
+  State<CreateTeamDialog> createState() => _CreateTeamDialogState();
+}
+
+class _CreateTeamDialogState extends State<CreateTeamDialog> {
+  bool gettingData = false;
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -31,21 +38,21 @@ class CreateTeamDialog extends StatelessWidget {
             const KMyText('Create Team', weight: FontWeight.bold),
             const KVerticalSpace(),
             KTextField(
-              controller: teamNameController,
+              controller: widget.teamNameController,
               hintText: 'Enter Team name',
               color: cardColor.withAlpha(255),
               capitalization: TextCapitalization.words,
             ),
             const KVerticalSpace(),
             KTextField(
-              controller: projectNameController,
+              controller: widget.projectNameController,
               hintText: 'Enter Project name',
               color: cardColor.withAlpha(255),
               capitalization: TextCapitalization.words,
             ),
             const KVerticalSpace(),
             KTextField(
-              controller: projectDescriptionController,
+              controller: widget.projectDescriptionController,
               hintText: 'Enter project  description',
               maxLines: 3,
               keyboardType: TextInputType.multiline,
@@ -54,19 +61,30 @@ class CreateTeamDialog extends StatelessWidget {
             ),
             const KVerticalSpace(),
             KCustomButton(
-              onTap: () => FirebaseServices()
-                  .createTeam(
-                teamName: teamNameController.text,
-                projectName: projectNameController.text,
-                projectDescription: projectDescriptionController.text,
-              )
-                  .then((value) {
-                projectNameController.clear();
-                teamNameController.clear();
-                projectDescriptionController.clear();
+              onTap: () async {
+                setState(() {
+                  gettingData = true;
+                });
+                await FirebaseServices().createTeam(
+                  teamName: widget.teamNameController.text,
+                  projectName: widget.projectNameController.text,
+                  projectDescription: widget.projectDescriptionController.text,
+                );
+                widget.projectNameController.clear();
+                widget.teamNameController.clear();
+                widget.projectDescriptionController.clear();
+                setState(() {
+                  gettingData = false;
+                });
+
                 Navigator.pop(context);
-              }),
-              child: const KMyText('Create Team', color: Colors.white),
+              },
+              child: Visibility(
+                  visible: !gettingData,
+                  replacement: const CircularProgressIndicator(
+                    color: Colors.white,
+                  ),
+                  child: const KMyText('Create Team', color: Colors.white)),
             )
           ],
         ),

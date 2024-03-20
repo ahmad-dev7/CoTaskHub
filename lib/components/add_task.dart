@@ -20,6 +20,7 @@ class CreateTask extends StatefulWidget {
 class _CreateTaskState extends State<CreateTask> {
   var titleController = TextEditingController();
   var descriptionController = TextEditingController();
+  bool gettingData = false;
   List<String> members = [];
   String assignTo = '';
   DateTime? dueDate;
@@ -135,14 +136,20 @@ class _CreateTaskState extends State<CreateTask> {
               ),
               const KVerticalSpace(),
               KCustomButton(
-                child: const KMyText('Create Task'),
+                child: Visibility(
+                    visible: !gettingData,
+                    replacement:
+                        const CircularProgressIndicator(color: Colors.white),
+                    child: const KMyText('Create Task')),
                 onTap: () async {
+                  setState(() => gettingData = true);
                   await FirebaseServices().addTask(
                     title: titleController.text,
                     desc: descriptionController.text,
                     dueDate: dueDate!,
                     assignedTo: assignTo,
                   );
+                  setState(() => gettingData = false);
                   Navigator.pop(context);
                 },
               )

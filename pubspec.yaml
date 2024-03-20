@@ -60,7 +60,6 @@ dependencies:
   url_launcher: ^6.2.4
   easy_image_viewer: ^1.4.1
   easy_pdf_viewer: ^1.0.8
-  fl_chart: ^0.65.0
 
 dev_dependencies:
   flutter_test:

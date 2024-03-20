@@ -11,39 +11,49 @@ import 'package:co_task_hub/services/firebase_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    TextEditingController emailController = TextEditingController();
-    TextEditingController passwordController = TextEditingController();
-    onLogin() async {
-      dataBox.clear();
-      debugPrint('executed Login');
-      bool isValidUser = await FirebaseServices().loginUser(
-        email: emailController.text.trim().toLowerCase(),
-        password: passwordController.text,
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  bool gettingData = false;
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  onLogin() async {
+    setState(() => gettingData = true);
+    dataBox.clear();
+    debugPrint('executed Login');
+    bool isValidUser = await FirebaseServices().loginUser(
+      email: emailController.text.trim().toLowerCase(),
+      password: passwordController.text,
+    );
+    if (isValidUser) {
+      Get.snackbar(
+        "Success",
+        "Authentication completed",
+        duration: const Duration(milliseconds: 1300),
+        backgroundColor: Colors.greenAccent,
       );
-      if (isValidUser) {
-        Get.snackbar(
-          "Success",
-          "Authentication completed",
-          duration: const Duration(milliseconds: 1300),
-          backgroundColor: Colors.greenAccent,
-        );
-        Future.delayed(const Duration(milliseconds: 1600)).then(
-          (value) => Get.offAll(
+      Future.delayed(const Duration(milliseconds: 1600)).then(
+        (value) {
+          setState(() => gettingData = false);
+          Get.offAll(
             () => myController.teamData.value.teamCode != null
                 ? const NavigationScreen()
                 : const HomeScreen(),
-          ),
-        );
-      } else {
-        Get.snackbar('Error', 'Fill email & password fields correctly');
-      }
+          );
+        },
+      );
+    } else {
+      Get.snackbar('Error', 'Fill email & password fields correctly');
     }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -75,9 +85,14 @@ class LoginScreen extends StatelessWidget {
                   // Login button
                   KCustomButton(
                     onTap: onLogin,
-                    child: const KMyText(
-                      'Login',
-                      color: Colors.white,
+                    child: Visibility(
+                      visible: !gettingData,
+                      replacement:
+                          const CircularProgressIndicator(color: Colors.white),
+                      child: const KMyText(
+                        'Login',
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                   const KVerticalSpace(),

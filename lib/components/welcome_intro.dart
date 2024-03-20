@@ -22,7 +22,11 @@ class _WelcomeIntroState extends State<WelcomeIntro> {
   var teamNameController = TextEditingController();
   var projectNameController = TextEditingController();
   var projectDescriptionController = TextEditingController();
+  bool gettingData = false;
   onCreateTeam() {
+    setState(() {
+      gettingData = true;
+    });
     Get.dialog(
       CreateTeamDialog(
         teamNameController: teamNameController,
@@ -32,6 +36,7 @@ class _WelcomeIntroState extends State<WelcomeIntro> {
       barrierDismissible: false,
       barrierColor: const Color(0xAF000000),
     ).then((value) {
+      Get.offAll(() => const NavigationScreen());
       Get.snackbar(
         '',
         '',
@@ -45,7 +50,6 @@ class _WelcomeIntroState extends State<WelcomeIntro> {
         duration: const Duration(seconds: 15),
         backgroundColor: Colors.green,
       );
-      Get.offAll(() => const NavigationScreen());
     });
   }
 
@@ -89,11 +93,25 @@ class _WelcomeIntroState extends State<WelcomeIntro> {
               ),
               const SizedBox(height: 10),
               KCustomButton(
-                onTap: () => FirebaseServices().joinTeam(
-                  teamCode: teamCodeController.text,
-                ),
+                onTap: () async {
+                  setState(() {
+                    gettingData = true;
+                  });
+                  await FirebaseServices()
+                      .joinTeam(
+                        teamCode: teamCodeController.text,
+                      )
+                      .then((value) => Get.offAll(const NavigationScreen()));
+                  setState(() {
+                    gettingData = false;
+                  });
+                },
                 color: accentColor,
-                child: const KMyText('Join Team', color: Colors.white),
+                child: Visibility(
+                    visible: !gettingData,
+                    replacement:
+                        const CircularProgressIndicator(color: Colors.white),
+                    child: const KMyText('Join Team', color: Colors.white)),
               ),
             ],
           ),

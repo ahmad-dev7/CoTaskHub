@@ -29,134 +29,109 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            StreamBuilder(
-              stream: FirebaseFirestore.instance
-                  .collection('chats')
-                  .orderBy('timeStamp')
-                  .snapshots(),
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                List<MessageModel> messageList = [];
-                if (snapshot.hasData) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  final List<DocumentSnapshot> documents =
-                      snapshot.data?.docs.reversed.toList();
-                  for (DocumentSnapshot document in documents) {
-                    final Map<String, dynamic> data =
-                        document.data() as Map<String, dynamic>;
-                    messageList.add(
-                      MessageModel(
-                        message: data['message'],
-                        timestamp: data['timeStamp'],
-                        senderEmail: data['senderEmail'],
-                        name: data['name'],
-                        isUrl: data['isUrl'],
-                        teamCode: data['teamCode'],
-                      ),
-                    );
-                  }
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection('chats')
+              .where(Filter('teamCode',
+                  isEqualTo: myController.teamData.value.teamCode))
+              .orderBy('timeStamp')
+              .snapshots(),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            List<MessageModel> messageList = [];
+            if (snapshot.hasData) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              final List<DocumentSnapshot> documents =
+                  snapshot.data?.docs.reversed.toList();
+              for (DocumentSnapshot document in documents) {
+                final Map<String, dynamic> data =
+                    document.data() as Map<String, dynamic>;
+                messageList.add(
+                  MessageModel(
+                    message: data['message'],
+                    timestamp: data['timeStamp'],
+                    senderEmail: data['senderEmail'],
+                    name: data['name'],
+                    isUrl: data['isUrl'],
+                    teamCode: data['teamCode'],
+                  ),
+                );
+              }
 
-                  return SizedBox(
-                    height: MediaQuery.of(context).size.height - 215,
-                    width: double.maxFinite,
-                    child: ListView.builder(
-                      reverse: true,
-                      itemCount: messageList.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        bool isSender = messageList[index].senderEmail ==
-                            dataBox.get('email');
+              return Expanded(
+                child: ListView.builder(
+                  reverse: true,
+                  controller: ScrollController(),
+                  addAutomaticKeepAlives: true,
+                  itemCount: messageList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    bool isSender =
+                        messageList[index].senderEmail == dataBox.get('email');
 
-                        return Padding(
-                          padding: EdgeInsets.only(bottom: index == 0 ? 5 : 0),
-                          child: Visibility(
-                            visible: messageList[index].isUrl == false,
-                            replacement: Align(
-                              child: Container(
-                                margin: const EdgeInsets.symmetric(
-                                    horizontal: 50, vertical: 10),
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 0),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[200],
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: ListTile(
-                                  title: KMyText(
-                                    "${messageList[index].name}, added new file",
-                                    size: 14,
-                                  ),
-                                  trailing: InkWell(
-                                    onTap: () => launchUrl(
-                                        Uri.parse(messageList[0].message)),
-                                    child: const Chip(
-                                      label: Icon(
-                                        Icons.file_download,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                    return Padding(
+                      padding: EdgeInsets.only(bottom: index == 0 ? 5 : 0),
+                      child: Visibility(
+                        visible: messageList[index].isUrl == false,
+                        replacement: Align(
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 50, vertical: 10),
+                            padding: const EdgeInsets.symmetric(vertical: 0),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(20),
                             ),
-                            child: BubbleNormal(
-                              text: messageList[index].message,
-                              color: isSender ? accentColor : cardColor,
-                              textStyle: TextStyle(
-                                color: isSender ? Colors.white : Colors.black,
+                            child: ListTile(
+                              title: KMyText(
+                                "${messageList[index].name}, added new file",
+                                size: 14,
                               ),
-                              tail: true,
-                              isSender: isSender,
+                              trailing: InkWell(
+                                onTap: () => launchUrl(
+                                    Uri.parse(messageList[0].message)),
+                                child: const Chip(
+                                  label: Icon(
+                                    Icons.file_download,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                        );
-                      },
-                    ),
-                  );
-                } else {
-                  return const Padding(
-                    padding: EdgeInsets.only(top: 200),
-                    child: KMyText('No Message yet'),
-                  );
-                }
-              },
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: MessageBar(
-                onSend: (msg) => FirebaseServices().createMessage(message: msg),
-                actions: [
-                  if (myController.teamData.value.adminEmail ==
-                      dataBox.get('email'))
-                    IconButton(
-                      onPressed: () => showDialog<dynamic>(
-                          context: context,
-                          builder: (BuildContext bc) {
-                            return Container(
-                              decoration: const BoxDecoration(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(25.0),
-                                      topRight: Radius.circular(25.0))),
-                              child:
-                                  WebViewWidget(controller: webViewController),
-                            );
-                          }),
-                      icon: const Icon(
-                        Icons.video_chat_outlined,
-                        color: accentColor,
-                        size: 30,
+                        ),
+                        child: BubbleNormal(
+                          text: messageList[index].message,
+                          color: isSender ? accentColor : cardColor,
+                          textStyle: TextStyle(
+                            color: isSender ? Colors.white : Colors.black,
+                          ),
+                          tail: true,
+                          isSender: isSender,
+                        ),
                       ),
-                    )
-                ],
-              ),
-            ),
-          ],
+                    );
+                  },
+                ),
+              );
+            } else {
+              return const Padding(
+                padding: EdgeInsets.only(top: 200),
+                child: KMyText('No Message yet'),
+              );
+            }
+          },
         ),
-      ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: MessageBar(
+            onSend: (msg) => FirebaseServices().createMessage(message: msg),
+          ),
+        ),
+      ],
     );
   }
 }
