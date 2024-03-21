@@ -16,6 +16,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
   @override
   void initState() {
     navigate();
+
     super.initState();
   }
 

@@ -11,7 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class WelcomeIntro extends StatefulWidget {
-  const WelcomeIntro({super.key});
+  final bool? goBack;
+  const WelcomeIntro({super.key, this.goBack});
 
   @override
   State<WelcomeIntro> createState() => _WelcomeIntroState();

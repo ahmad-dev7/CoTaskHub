@@ -60,6 +60,7 @@ dependencies:
   url_launcher: ^6.2.4
   easy_image_viewer: ^1.4.1
   easy_pdf_viewer: ^1.0.8
+  firebase_messaging: ^14.7.10
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,9 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:co_task_hub/constants/k_colors.dart';
 import 'package:co_task_hub/constants/k_my_text.dart';
+import 'package:co_task_hub/constants/k_values.dart';
+import 'package:co_task_hub/controller/get_controller.dart';
 import 'package:co_task_hub/services/firebase_services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +19,6 @@ class FilesScreen extends StatefulWidget {
 
 class _FilesScreenState extends State<FilesScreen> {
   bool uploadingFile = false;
-  var fileData = [];
 
   pickFile() async {
     setState(() => uploadingFile = true);
@@ -34,61 +36,92 @@ class _FilesScreenState extends State<FilesScreen> {
           .addDocuments(fileName: fileName, file: file)
           .whenComplete(() => setState(() => uploadingFile = false));
       await FirebaseServices().createMessage(message: fileUrl, isUrl: true);
-      getFiles();
       Get.snackbar('Success', 'Pdf uploaded successfully');
     }
   }
 
-  getFiles() async {
-    fileData = await FirebaseServices().getDocuments();
-    setState(() {});
-  }
-
   @override
   void initState() {
-    getFiles();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: pickFile,
-        backgroundColor: accentColor,
-        icon: Visibility(
-            visible: !uploadingFile,
-            replacement: const CircularProgressIndicator(color: Colors.white),
-            child: const KMyText('Add Files', color: Colors.white)),
-        label: const Icon(Icons.file_open_outlined),
-      ),
-      body: GridView.builder(
-          itemCount: fileData.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-          ),
-          itemBuilder: (context, index) {
-            return InkWell(
-              onTap: () => launchUrl(Uri.parse(fileData[index]['url'])),
-              child: Container(
-                margin: const EdgeInsets.all(15),
-                padding: const EdgeInsets.symmetric(horizontal: 5),
-                decoration: BoxDecoration(
-                    border: Border.all(), color: cardColor.withOpacity(.3)),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    const Icon(
-                      Icons.file_open_outlined,
-                      size: 70,
-                      color: accentColor,
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: pickFile,
+          backgroundColor: accentColor,
+          icon: Visibility(
+              visible: !uploadingFile,
+              replacement: const CircularProgressIndicator(color: Colors.white),
+              child: const KMyText('Add Files', color: Colors.white)),
+          label: const Icon(Icons.file_open_outlined),
+        ),
+        body: StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection('files')
+              .where('teamCode',
+                  isEqualTo: myController.teamData.value.teamCode)
+              .snapshots(),
+          initialData: const KMyText('Upload any files'),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            var fileData = [];
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasData) {
+              fileData = snapshot.data.docs;
+              return GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2),
+                itemCount: fileData.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return InkWell(
+                    onTap: () => launchUrl(Uri.parse(fileData[index]['url'])),
+                    child: Container(
+                      height: 500,
+                      margin: const EdgeInsets.all(15),
+                      padding: const EdgeInsets.symmetric(horizontal: 0),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: accentColor),
+                        color: cardColor.withOpacity(.3),
+                        borderRadius: BorderRadius.circular(radius),
+                      ),
+                      child: ListTile(
+                        title: ClipRRect(
+                          borderRadius: BorderRadius.circular(radius),
+                          child: Image.network(
+                            fileData[index]['url'],
+                            height: 100,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.network(
+                                'https://www.iconpacks.net/icons/2/free-pdf-icon-3385-thumb.png',
+                                height: 100,
+                              );
+                            },
+                          ),
+                        ),
+                        contentPadding: const EdgeInsets.all(10),
+                        subtitle: Padding(
+                          padding: const EdgeInsets.only(top: 20),
+                          child: Flexible(
+                            child: KMyText(
+                              fileData[index]['name'],
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                    KMyText(fileData[index]['name'])
-                  ],
-                ),
-              ),
+                  );
+                },
+              );
+            }
+            return const Center(
+              child: KMyText('No files uploaded yet'),
             );
-          }),
-    );
+          },
+        ));
   }
 }

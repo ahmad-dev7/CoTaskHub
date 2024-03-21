@@ -12,6 +12,7 @@ class KCustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
+      splashColor: cardColor,
       onPressed: onTap,
       height: 50,
       shape:

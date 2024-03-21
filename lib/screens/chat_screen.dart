@@ -42,10 +42,14 @@ class _ChatScreenState extends State<ChatScreen> {
               .snapshots(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             List<MessageModel> messageList = [];
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                  child: Padding(
+                padding: EdgeInsets.only(top: 100),
+                child: CircularProgressIndicator(),
+              ));
+            }
             if (snapshot.hasData) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
               final List<DocumentSnapshot> documents =
                   snapshot.data?.docs.reversed.toList();
               for (DocumentSnapshot document in documents) {

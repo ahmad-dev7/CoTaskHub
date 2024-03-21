@@ -19,6 +19,9 @@ class FirebaseServices {
   final CollectionReference files =
       FirebaseFirestore.instance.collection('files');
 
+  final CollectionReference userFolder =
+      FirebaseFirestore.instance.collection('userFolder');
+
   //! Signup (Create User) with email & password
   Future<bool> createUser(
       {required String email,
@@ -29,6 +32,11 @@ class FirebaseServices {
       password: password,
     );
     if (userCredential.user != null) {
+      await userFolder.add({
+        'owner': email,
+        'ownerName': name,
+        'myTeams': [],
+      });
       userCredential.user?.updateDisplayName(name).then((_) {
         dataBox.put('email', email);
         dataBox.put('name', name);
@@ -60,27 +68,57 @@ class FirebaseServices {
     required String projectDescription,
   }) async {
     String teamCode = generateTeamCode();
-    await teamCollection.add({
-      'teamName': teamName,
-      'projectName': projectName,
-      'projectDescription': projectDescription,
-      'teamCode': teamCode,
-      'adminName': dataBox.get('name'),
-      'adminEmail': dataBox.get('email'),
-      'members': [
-        {
-          'name': dataBox.get('name'),
-          'email': dataBox.get('email'),
-        }
-      ],
-      'tasks': [],
-    });
-    dataBox.put('teamCode', teamCode);
-    Get.back();
-    myController.teamData.value = await getTeamDetails();
-    myController.teamData.refresh();
-    print("Created team name ${myController.teamData.value.teamName!}");
+    try {
+      await teamCollection.add({
+        'teamName': teamName,
+        'projectName': projectName,
+        'projectDescription': projectDescription,
+        'teamCode': teamCode,
+        'adminName': dataBox.get('name'),
+        'adminEmail': dataBox.get('email'),
+        'members': [
+          {
+            'name': dataBox.get('name'),
+            'email': dataBox.get('email'),
+          }
+        ],
+        'tasks': [],
+      });
+      QuerySnapshot teamSnapShot = await userFolder
+          .where(Filter('owner', isEqualTo: dataBox.get('email')))
+          .get();
+      if (teamSnapShot.docs.isNotEmpty) {
+        DocumentSnapshot teamDoc = teamSnapShot.docs.first;
+        List<dynamic> newTeam = teamDoc['myTeams'];
+        newTeam.add({
+          'codes': teamCode,
+        });
+        teamDoc.reference.update({'myTeams': newTeam});
+        dataBox.put('teamCode', teamCode);
+        myController.teamData.value = await getTeamDetails();
+        myController.teamData.refresh();
+        return;
+      }
+      dataBox.put('teamCode', teamCode);
+      Get.back();
+      myController.teamData.value = await getTeamDetails();
+      myController.teamData.refresh();
+      print("Created team name ${myController.teamData.value.teamName!}");
+    } catch (e) {
+      return;
+    }
     return;
+  }
+
+  Future getAllTeams() async {
+    QuerySnapshot teamSnapShot = await userFolder
+        .where(Filter('owner', isEqualTo: dataBox.get('email')))
+        .get();
+    List<Map<String, dynamic>> teamData = teamSnapShot.docs
+        .map((doc) => doc.data() as Map<String, dynamic>)
+        .toList();
+    print(jsonEncode(teamData[0]));
+    return teamData[0];
   }
 
   // Join Team
@@ -190,19 +228,19 @@ class FirebaseServices {
     required String fileName,
     required File file,
   }) async {
-    final reference =
-        FirebaseStorage.instance.ref().child("files/$fileName.pdf");
+    final reference = FirebaseStorage.instance.ref().child("files/$fileName");
 
     final uploadTask = reference.putFile(file);
 
     await uploadTask.whenComplete(() => null);
 
     final fileUrl = await reference.getDownloadURL();
-
+    String teamCode = myController.teamData.value.teamCode!;
+    print("Posting data to this team: $teamCode");
     await files.add({
       'name': fileName,
       'url': fileUrl,
-      'teamCode': myController.teamData.value.teamCode,
+      'teamCode': teamCode,
     });
 
     return fileUrl;
@@ -214,15 +252,12 @@ class FirebaseServices {
         .where(
           Filter(
             'teamCode',
-            isEqualTo: dataBox.get('teamCode'),
+            isEqualTo: myController.teamData.value.teamCode,
           ),
         )
         .get();
 
     var filesData = result.docs.map((e) => e.data()).toList();
-    print(filesData[0]);
     return filesData;
   }
-
-  Future leaveTeam() async {}
 }

@@ -1,3 +1,4 @@
+import 'package:co_task_hub/components/multi_task.dart';
 import 'package:co_task_hub/constants/k_colors.dart';
 import 'package:co_task_hub/constants/k_confirmation_dialog.dart';
 import 'package:co_task_hub/constants/k_custom_button.dart';
@@ -11,18 +12,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class MyDrawer extends StatefulWidget {
-  const MyDrawer({super.key});
+  final dynamic data;
+  const MyDrawer({super.key, this.data});
 
   @override
   State<MyDrawer> createState() => _MyDrawerState();
 }
 
 class _MyDrawerState extends State<MyDrawer> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -106,7 +103,29 @@ class _MyDrawerState extends State<MyDrawer> {
             ),
           ),
           const KVerticalSpace(),
-          // Webview
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: KCustomButton(
+              child: const KMyText('Create or Join team'),
+              onTap: () => Get.to(
+                () => const MultiTask(),
+              ),
+            ),
+          ),
+          // SizedBox(
+          //   height: 100,
+          //   child: ListView.builder(
+          //     itemCount: 5,
+          //     itemBuilder: (BuildContext context, int index) {
+          //       return Container(
+          //         margin: const EdgeInsets.all(10),
+          //         height: 20,
+          //         color: Colors.red,
+          //         child: KMyText(widget.data['myTeams'][index]['codes']),
+          //       );
+          //     },
+          //   ),
+          // ),
 
           // Leave Team & Logout
           Column(

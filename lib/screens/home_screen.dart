@@ -72,7 +72,20 @@ class _HomeScreenState extends State<HomeScreen> {
                               'Create Task',
                               color: Colors.white,
                             ),
-                            onDeleted: () => '',
+                            onDeleted: () {
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                isDismissible: false,
+                                useSafeArea: true,
+                                builder: (context) {
+                                  return const CreateTask();
+                                },
+                              ).whenComplete(
+                                () => Get.snackbar('Success', 'Task created',
+                                    backgroundColor: const Color(0x944CAF4F)),
+                              );
+                            },
                             deleteIcon: const Icon(
                               Icons.add_circle,
                               color: Colors.white,

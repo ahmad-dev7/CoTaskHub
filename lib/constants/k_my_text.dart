@@ -6,6 +6,7 @@ class KMyText extends StatelessWidget {
   final double? size;
   final FontWeight? weight;
   final TextDecoration? decoration;
+  final TextOverflow? overflow;
   const KMyText(
     this.text, {
     super.key,
@@ -13,6 +14,7 @@ class KMyText extends StatelessWidget {
     this.size,
     this.weight,
     this.decoration,
+    this.overflow,
   });
 
   @override
@@ -24,6 +26,7 @@ class KMyText extends StatelessWidget {
         color: color ?? Colors.black,
         fontSize: size,
         fontWeight: weight,
+        overflow: overflow,
       ),
     );
   }
